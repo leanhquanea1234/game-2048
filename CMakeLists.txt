@@ -22,13 +22,11 @@ include_directories(include)
 # Add executable
 add_executable(2048 ${SOURCES})
 
-# Add SFML include and library directories
-set(SFML_DIR "${CMAKE_SOURCE_DIR}/lib/SFML")
-include_directories(${SFML_DIR}/include)
-link_directories(${SFML_DIR}/lib)
-
-# Find SFML package and link libraries
+# Find SFML package
+set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/lib/SFML") # Optional: point to local SFML if needed
 find_package(SFML 2.5 COMPONENTS system window graphics REQUIRED)
+
+# Link SFML libraries
 target_link_libraries(2048 sfml-system sfml-window sfml-graphics)
 
 # Cross-platform libraries
