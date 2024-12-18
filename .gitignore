@@ -1,0 +1,22 @@
+# Ignore build artifacts
+build/
+*.o
+*.obj
+*.exe
+*.out
+*.dll
+*.so
+*.dylib
+
+# Ignore SFML binaries (keep headers if in `libs` folder)
+lib/SFML/lib/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE/project files
+.vscode/
+*.sln
+*.vcxproj
+*.xcodeproj
