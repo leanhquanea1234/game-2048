@@ -12,7 +12,7 @@ const short EXIT = 0, UP = 1, DOWN = 2, LEFT = 3, RIGHT = 4, UNDO = 5, REDO = 6;
 
 struct Board {
 	int size = 0;
-	unsigned long long highcore = 0;
+	unsigned long long score = 0;
 	unsigned int **value, step = 0;
 };
 

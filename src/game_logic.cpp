@@ -34,8 +34,8 @@ bool initializeGameBoard(Board &gameBoard, const int &size) {
 	return 1;
 }
 
-void updateHighscore(Board &gameBoard, const unsigned long long &value) {
-	gameBoard.highcore += value;
+void updateScore(Board &gameBoard, const unsigned long long &value) {
+	gameBoard.score += value;
 }
 
 void addRandomTile(Board &gameBoard) {
@@ -106,7 +106,7 @@ void moveTile(Board &gameBoard, short direction) {
 
 		shiftTile(line, gameBoard.size);
 		// merge and update score
-		updateHighscore(gameBoard, mergeTile(line, gameBoard.size));
+		updateScore(gameBoard, mergeTile(line, gameBoard.size));
 		shiftTile(line, gameBoard.size); // shift again bc of prev merge
 
 		for (int j = 0; j < gameBoard.size; j++)
@@ -137,7 +137,7 @@ void deleteGameBoard(Board &gameBoard) {
 	
 	gameBoard.value = nullptr;
 	gameBoard.size = 0;
-	gameBoard.highcore = 0;
+	gameBoard.score = 0;
 	gameBoard.step = 0;
 }
 
@@ -154,7 +154,7 @@ Board* copyState(const Board &gameBoard) {
 	if (!initializeGameBoard(*newGameBoard, gameBoard.size))
 		return nullptr;
 
-	newGameBoard->highcore = gameBoard.highcore;
+	newGameBoard->score = gameBoard.score;
 	newGameBoard->size = gameBoard.size;
 	newGameBoard->step = gameBoard.step;
 	for (int i = 0; i < gameBoard.size; i++)

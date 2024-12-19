@@ -2,7 +2,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 # Project Name
-project(GAME 2048 v0.1)
+project(2048)
 
 # Set C++ Standard
 set(CMAKE_CXX_STANDARD 17)
