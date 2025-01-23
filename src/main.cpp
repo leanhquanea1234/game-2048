@@ -2,19 +2,19 @@
 
 /*
 TODO LIST:
-add highscore X
-add undo, redo X
 add save
-rendering with terminal ~
+rendering
 menu f it, later
-input X
+
+KNOWN BUGs
+illegal moves
+
 
 */
 
 // what happen in one cycle of a game
 bool runCycle(Board &gameBoard, SavedBoard &savedBoard) {
 	if (!checkPossibleMove(gameBoard)) return false;
-	
 	short userInput;
 
 	printGameBoard(gameBoard);
@@ -29,9 +29,9 @@ bool runCycle(Board &gameBoard, SavedBoard &savedBoard) {
 	}
 	else if (userInput == EXIT) return false;
 
-	updateUndoStack(gameBoard, savedBoard);
+	updateUndoList(gameBoard, savedBoard);
 	moveTile(gameBoard, userInput);
-	resetRedoStack(savedBoard);
+	resetRedoList(savedBoard);
 	addRandomTile(gameBoard);
 	
 	return true;
@@ -40,7 +40,7 @@ bool runCycle(Board &gameBoard, SavedBoard &savedBoard) {
 int main() {
 	Board gameBoard;
 	SavedBoard savedBoard;
-	initializeGameBoard(gameBoard, 5);
+	initializeGameBoard(gameBoard, 4);
 
 	addRandomTile(gameBoard);
 	while (runCycle(gameBoard, savedBoard));

@@ -11,10 +11,6 @@ build/
 # Ignore SFML binaries (keep headers if in `libs` folder)
 lib/SFML/lib/
 
-# Ignore system files
-.DS_Store
-Thumbs.db
-
 # Ignore IDE/project files
 .vscode/
 *.sln

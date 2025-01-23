@@ -13,12 +13,12 @@ void deleteGameBoard(Board &gameBoard);
 
 // -----UNDO & REDO-----
 
-void updateUndoStack(const Board &gameBoard, SavedBoard &savedBoard);
+void updateUndoList(const Board &gameBoard, SavedBoard &savedBoard);
 
 bool undoGame(Board &gameBoard, SavedBoard &savedBoard);
 bool redoGame(Board &gameBoard, SavedBoard &savedBoard);
 
-void resetRedoStack(SavedBoard &savedBoard);
+void resetRedoList(SavedBoard &savedBoard);
 void resetSavedBoard(SavedBoard &savedBoard);
 
 #endif // !_GAME_LOGIC_H_

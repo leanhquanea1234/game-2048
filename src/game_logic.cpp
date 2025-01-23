@@ -39,30 +39,33 @@ void updateScore(Board &gameBoard, const unsigned long long &value) {
 }
 
 void addRandomTile(Board &gameBoard) {
-	srand(time(NULL));
-	std::vector<std::pair<int, int>> emptyTile;
+	srand((unsigned int)time(NULL));
+	List<std::pair<int, int>> emptyTile;
 	int countEmptyTile = 0;
 
 	for (int i = 0; i < gameBoard.size; i++)
 		for (int j = 0; j < gameBoard.size; j++)
 			if (!gameBoard.value[i][j]) {
-				emptyTile.push_back({ i, j });
+				emptyTile.addTail({ i, j });
 				countEmptyTile++;
 			}
 
 	if (!countEmptyTile) return;
 
-	int maxSpawnTile = SPAWN_RATE * countEmptyTile;
+	int maxSpawnTile = trunc(SPAWN_RATE * countEmptyTile);
 	if (!maxSpawnTile) maxSpawnTile = 1;
 
 	int spawnTile = 1 + rand() % maxSpawnTile;
-	int tileChosen;
+	std::pair<int, int> tileChosen;
 
 	for (int i = 0; i < spawnTile; i++) {
-		tileChosen = rand() % countEmptyTile;
-		gameBoard.value[emptyTile[tileChosen].first][emptyTile[tileChosen].second] = 2;
-		emptyTile.erase(emptyTile.begin() + tileChosen);
+		// tileChosen = rand() % countEmptyTile;
+		// gameBoard.value[emptyTile[tileChosen].first][emptyTile[tileChosen].second] = 2;
+		// emptyTile.erase(emptyTile.begin() + tileChosen);
+		tileChosen = emptyTile.takeValue(rand() % countEmptyTile);
+		gameBoard.value[tileChosen.first][tileChosen.second] = 2;
 		countEmptyTile--;
+		if(!countEmptyTile) return; // in case when countEmptyTile < spawnTile
 	}
 }
 
@@ -77,18 +80,18 @@ unsigned long long mergeTile(unsigned int *line, const int &size) {
 	return score;
 }
 
+// shift all tile hold val to the left
 void shiftTile(unsigned int *line, const int &size) {
-	std::vector<unsigned int> temp;
-	
-	for (int i = 0; i < size; i++)
-		if (line[i]) temp.push_back(line[i]);
+	int *temp = new int[size], cnt = 0;
 
-	// copy temp -> line, the rest of line fills back with 0 
-	int i = 0;
-	for (; i < temp.size(); i++)
+	for (int i = 0; i < size; i++)
+		if (line[i]) temp[cnt++] = line[i];
+
+	for(int i = 0; i < cnt; i++)
 		line[i] = temp[i];
-	for (; i < size; i++)
+	for(int i = cnt; i < size; i++)
 		line[i] = 0;
+	delete[] temp;
 }
 
 void moveTile(Board &gameBoard, short direction) {
@@ -121,10 +124,12 @@ void moveTile(Board &gameBoard, short direction) {
 }
 
 bool checkPossibleMove(const Board &gameBoard) {
-	for(int i = 0; i < gameBoard.size - 1; i++)
-		for (int j = 0; j < gameBoard.size - 1; j++) {
+	for(int i = 0; i < gameBoard.size; i++)
+		for (int j = 0; j < gameBoard.size; j++) {
 			if (!gameBoard.value[i][j]) return true;
-			else if (gameBoard.value[i][j] == gameBoard.value[i + 1][j] || gameBoard.value[i][j] == gameBoard.value[i][j + 1])
+			else if (i < gameBoard.size - 1 && gameBoard.value[i][j] == gameBoard.value[i + 1][j])
+				return true;
+			else if(j < gameBoard.size - 1 && gameBoard.value[i][j] == gameBoard.value[i][j + 1])
 				return true;
 		}
 	return false;
@@ -146,8 +151,10 @@ void deleteGameBoard(Board &gameBoard) {
 General ideal: savedGame has stack, queue to save pointer to gameBoard, so that gameBoard.value
 just gets passed by its address.
 
-undoStack is a dequeue to delete its oldest state when UNDO_CAP reaches its limit, still behaves like
+undoList is a dequeue to delete its oldest state when UNDO_CAP reaches its limit, still behaves like
 a stack in normal circumstance though.
+
+UPDATE: all linked list now 
 */
 Board* copyState(const Board &gameBoard) {
 	Board *newGameBoard = new Board;
@@ -172,54 +179,50 @@ Board* transferStateToPointer(Board &gameBoard) {
 	return newGameBoard;
 }
 
-void updateUndoStack(const Board &gameBoard, SavedBoard &savedBoard) {
-	if (savedBoard.undoStack.size() == UNDO_CAP) 
-		savedBoard.undoStack.pop_back();
-	savedBoard.undoStack.push_front(copyState(gameBoard));
+void updateUndoList(const Board &gameBoard, SavedBoard &savedBoard) {
+	if (savedBoard.undoList.size == UNDO_CAP) 
+		savedBoard.undoList.popTail();
+	savedBoard.undoList.addHead(copyState(gameBoard));
 }
 
 bool undoGame(Board &gameBoard, SavedBoard &savedBoard) {
-	if (savedBoard.undoStack.empty()) return false;
-	Board *previousState = savedBoard.undoStack.front();
-	savedBoard.undoStack.pop_front();
+	if (savedBoard.undoList.empty()) return false;
+	Board *previousState = savedBoard.undoList.popHead();
 
-	savedBoard.redoStack.push(transferStateToPointer(gameBoard));
+	savedBoard.redoList.addHead(transferStateToPointer(gameBoard));
 	gameBoard = *previousState;
 	delete previousState;
 	return true;
 }
 
 bool redoGame(Board &gameBoard, SavedBoard &savedBoard) {
-	if (savedBoard.redoStack.empty()) return false;
-	Board *nextState = savedBoard.redoStack.top();
-	savedBoard.redoStack.pop();
+	if (savedBoard.redoList.empty()) return false;
+	Board *nextState = savedBoard.redoList.popHead();
 
-	savedBoard.undoStack.push_front(transferStateToPointer(gameBoard));
+	savedBoard.undoList.addHead(transferStateToPointer(gameBoard));
 	gameBoard = *nextState;
 	delete nextState;
 	return true;
 }
 
-void resetRedoStack(SavedBoard &savedBoard) {
+void resetRedoList(SavedBoard &savedBoard) {
 	Board *temp;
-	while (!savedBoard.redoStack.empty()) {
-		temp = savedBoard.redoStack.top();
-		savedBoard.redoStack.pop();
+	while (!savedBoard.redoList.empty()) {
+		temp = savedBoard.redoList.popHead();
 		deleteGameBoard(*temp);
 		delete temp;
 	}
 }
 
-void resetUndoStack(SavedBoard &savedBoard) {
+void resetUndoList(SavedBoard &savedBoard) {
 	Board *temp;
-	while (!savedBoard.undoStack.empty()) {
-		temp = savedBoard.undoStack.front();
-		savedBoard.undoStack.pop_front();
+	while (!savedBoard.undoList.empty()) {
+		temp = savedBoard.undoList.popHead();
 		deleteGameBoard(*temp);
 		delete temp;
 	}
 }
 void resetSavedBoard(SavedBoard &savedBoard) {
-	resetRedoStack(savedBoard);
-	resetUndoStack(savedBoard);
+	resetRedoList(savedBoard);
+	resetUndoList(savedBoard);
 }

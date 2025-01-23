@@ -24,18 +24,8 @@ add_executable(2048 ${SOURCES})
 
 # Find SFML package
 set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/lib/SFML") # Optional: point to local SFML if needed
-find_package(SFML 2.5 COMPONENTS system window graphics REQUIRED)
+find_package(SFML COMPONENTS system window graphics REQUIRED)
 
 # Link SFML libraries
 target_link_libraries(2048 sfml-system sfml-window sfml-graphics)
 
-# Cross-platform libraries
-# if(WIN32)
-#     # Add PDCurses for Windows
-#     find_library(PDCURSES_LIBRARY pdcurses REQUIRED)
-#     target_link_libraries(2048 ${PDCURSES_LIBRARY})
-# elseif(UNIX)
-#     # Add ncurses for Linux/macOS
-#     find_package(Curses REQUIRED)
-#     target_link_libraries(2048 ${CURSES_LIBRARIES})
-# endif()
