@@ -7,9 +7,12 @@
 
 bool initializeGameBoard(Board &gameBoard, const int &size);
 void addRandomTile(Board &gameBoard);
-void moveTile(Board &gameBoard, short direction);
+bool moveTile(Board &gameBoard, short direction);
+bool checkValidMovement(const Board& gameBoard, SavedBoard &savedBoard);
 bool checkPossibleMove(const Board &gameBoard);
 void deleteGameBoard(Board &gameBoard);
+void clearGameBoard(Board& gameBoard);
+
 
 // -----UNDO & REDO-----
 

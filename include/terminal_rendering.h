@@ -4,5 +4,6 @@
 #include "my_library.h"
 
 void printGameBoard(const Board &gameBoard);
+void RunGameTerminal(Board &gameBoard, SavedBoard &savedBoard);
 
 #endif

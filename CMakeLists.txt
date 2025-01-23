@@ -1,31 +1,26 @@
-# Minimum version of CMake
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.28)
+project(Game2048 LANGUAGES CXX)
 
-# Project Name
-project(2048)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 
-# Set C++ Standard
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+include(FetchContent)
+FetchContent_Declare(SFML
+    GIT_REPOSITORY https://github.com/SFML/SFML.git
+    GIT_TAG 2.6.x
+    GIT_SHALLOW ON)
+FetchContent_MakeAvailable(SFML)
 
-# Source files
 set(SOURCES
     src/main.cpp
     src/game_logic.cpp
     src/terminal_rendering.cpp
-    src/user_input.cpp
+    src/rendering.cpp
 )
 
-# Include directories
 include_directories(include)
+include_directories(${CMAKE_SOURCE_DIR}/assets)
+add_executable(${PROJECT_NAME} ${SOURCES})
 
-# Add executable
-add_executable(2048 ${SOURCES})
-
-# Find SFML package
-set(CMAKE_PREFIX_PATH "${CMAKE_SOURCE_DIR}/lib/SFML") # Optional: point to local SFML if needed
-find_package(SFML COMPONENTS system window graphics REQUIRED)
-
-# Link SFML libraries
-target_link_libraries(2048 sfml-system sfml-window sfml-graphics)
-
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_17)
+target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics)

@@ -7,16 +7,11 @@ empty tiles.
 min spawned tiles will be 1 if the board has empty tile. 
 The game ends when there is no more possible move.
 
-Current max size is 5 x 5
-2^(size * size) is the theoretically maximal point of 1 tile, that will be the winning solution
-
-TO DO: set max size in input
-
+Winning solution: make score which is unsinged long long overflowed ww.
 */
 
-
-const double SPAWN_RATE = 0.1;
-const int UNDO_CAP = 100;
+// array to store power of 2, calculated once in each session
+unsigned long long *toBase2 = nullptr;
 
 bool initializeGameBoard(Board &gameBoard, const int &size) {
 	gameBoard.size = size;
@@ -34,8 +29,15 @@ bool initializeGameBoard(Board &gameBoard, const int &size) {
 	return 1;
 }
 
-void updateScore(Board &gameBoard, const unsigned long long &value) {
-	gameBoard.score += value;
+unsigned long long* getTileValue(const unsigned int& value) {
+	if(!toBase2) {
+		toBase2 = new unsigned long long[64];
+		toBase2[0] = 1;
+		for(int i = 1; i < 64; i++)
+			toBase2[i] = toBase2[i - 1] * 2;
+	}
+	
+	return toBase2 + value;
 }
 
 void addRandomTile(Board &gameBoard) {
@@ -59,25 +61,24 @@ void addRandomTile(Board &gameBoard) {
 	std::pair<int, int> tileChosen;
 
 	for (int i = 0; i < spawnTile; i++) {
-		// tileChosen = rand() % countEmptyTile;
-		// gameBoard.value[emptyTile[tileChosen].first][emptyTile[tileChosen].second] = 2;
-		// emptyTile.erase(emptyTile.begin() + tileChosen);
 		tileChosen = emptyTile.takeValue(rand() % countEmptyTile);
-		gameBoard.value[tileChosen.first][tileChosen.second] = 2;
+		gameBoard.value[tileChosen.first][tileChosen.second] = 1;
 		countEmptyTile--;
 		if(!countEmptyTile) return; // in case when countEmptyTile < spawnTile
 	}
 }
 
-unsigned long long mergeTile(unsigned int *line, const int &size) {
-	unsigned long long score = 0;
-	for(int i = 0; i < size - 1; i++)
+// merge and update score
+bool mergeTile(Board& gameBoard, unsigned int *line) {
+	for(int i = 0; i < gameBoard.size - 1; i++)
 		if (line[i] && line[i] == line[i + 1]) {
-			line[i] <<= 1;
+			line[i]++;
 			line[i + 1] = 0;
-			score += line[i];
+			if(gameBoard.score > MAX_LL - *getTileValue(line[i]) || line[i] >= 64)
+				return 0;
+			else gameBoard.score += *getTileValue(line[i]);
 		}
-	return score;
+	return 1;
 }
 
 // shift all tile hold val to the left
@@ -94,9 +95,8 @@ void shiftTile(unsigned int *line, const int &size) {
 	delete[] temp;
 }
 
-void moveTile(Board &gameBoard, short direction) {
+bool moveTile(Board &gameBoard, short direction) {
 	unsigned int *line = new unsigned int[gameBoard.size];
-	gameBoard.step++;
 
 	for (int i = 0; i < gameBoard.size; i++) {
 		for(int j = 0; j < gameBoard.size; j++)
@@ -109,7 +109,7 @@ void moveTile(Board &gameBoard, short direction) {
 
 		shiftTile(line, gameBoard.size);
 		// merge and update score
-		updateScore(gameBoard, mergeTile(line, gameBoard.size));
+		if(!mergeTile(gameBoard, line)) return 0;
 		shiftTile(line, gameBoard.size); // shift again bc of prev merge
 
 		for (int j = 0; j < gameBoard.size; j++)
@@ -121,6 +121,16 @@ void moveTile(Board &gameBoard, short direction) {
 			}
 	}
 	delete[] line;
+	return 1;
+}
+
+bool checkValidMovement(const Board& gameBoard, SavedBoard &savedBoard) {
+	Board *previousBoard = savedBoard.undoList.pHead->value;
+	for(int i = 0; i < gameBoard.size; i++)
+		for (int j = 0; j < gameBoard.size; j++)
+			if(gameBoard.value[i][j] != previousBoard->value[i][j])
+				return 1;
+	return 0;
 }
 
 bool checkPossibleMove(const Board &gameBoard) {
@@ -135,7 +145,18 @@ bool checkPossibleMove(const Board &gameBoard) {
 	return false;
 }
 
+void clearGameBoard(Board& gameBoard) {
+	gameBoard.score = 0;
+	gameBoard.step = 0;
+	for(int i = 0; i < gameBoard.size; i++)
+		for(int j = 0; j < gameBoard.size; j++)
+			gameBoard.value[i][j] = 0;
+}
+
 void deleteGameBoard(Board &gameBoard) {
+	delete[] toBase2;
+	toBase2 = nullptr;
+
 	for (int i = 0; i < gameBoard.size; i++)
 		delete[] gameBoard.value[i];
 	delete[] gameBoard.value;

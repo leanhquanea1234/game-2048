@@ -4,11 +4,14 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
-#include <conio.h> // WIN specfic
 #include "linked_list.h"
 
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 
-const short EXIT = 0, UP = 1, DOWN = 2, LEFT = 3, RIGHT = 4, UNDO = 5, REDO = 6;
+
+const short OVERFLOWED = 10, END_SESSION = 0, MENU = 1, IN_SESSION = 2, UP = 1, DOWN = 2, LEFT = 3, RIGHT = 4, UNDO = 5, REDO = 6;
+const unsigned long long MAX_LL = 18446744073709551615;
 
 struct Board {
 	int size = 0;
@@ -21,9 +24,10 @@ struct SavedBoard {
 };
 
 //-----USER DEFINED-----
+#include "config.h"
 #include "game_logic.h"
 #include "terminal_rendering.h"
-#include "user_input.h"
+#include "rendering.h"
 
 
 #endif // !_MY_LIBRARY_H_
