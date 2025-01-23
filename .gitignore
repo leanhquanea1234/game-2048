@@ -8,8 +8,8 @@ build/
 *.so
 *.dylib
 
-# Ignore SFML binaries (keep headers if in `libs` folder)
-lib/SFML/lib/
+# Ignore lib
+lib/*
 
 # Ignore IDE/project files
 .vscode/
