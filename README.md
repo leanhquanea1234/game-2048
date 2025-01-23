@@ -6,7 +6,7 @@ A simple game 2048 implemented using C++ with SFML v2.6. A project purely for th
 
 ## Demo
 
-[![Watch the video](https://img.youtube.com/vi/ejB1lSIpuds/default.jpg)](https://youtu.be/ejB1lSIpuds)
+[![Watch the video](https://img.youtube.com/vi/ejB1lSIpuds/hqdefault.jpg)](https://youtu.be/ejB1lSIpuds)
 
 ## Requirements
 - git
