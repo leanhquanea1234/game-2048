@@ -11,7 +11,7 @@
 
 
 const short OVERFLOWED = 10, END_SESSION = 0, MENU = 1, IN_SESSION = 2, UP = 1, DOWN = 2, LEFT = 3, RIGHT = 4, UNDO = 5, REDO = 6;
-const unsigned long long MAX_LL = 18446744073709551615;
+const unsigned long long MAX_LL = 18446744073709551614;
 
 struct Board {
 	int size = 0;

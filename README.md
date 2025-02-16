@@ -8,31 +8,58 @@ A simple game 2048 implemented using C++ with SFML v2.6. A project purely for th
 
 [![Watch the video](https://img.youtube.com/vi/ejB1lSIpuds/hqdefault.jpg)](https://youtu.be/ejB1lSIpuds)
 
-## Requirements
-- git
-- SFML 2.6
-- CMake 3.0 or later
-- A C++17-compatible compiler
-
 ## How to build
 
-1. Clone github repository via `git` command (or you can download .zip file):
-```
-git clone https://github.com/leanhquanea1234/game-2048
-```
+### Windows
 
-2. Generate build file using CMake:
+1. If you don't have Cmake, the first step is installing Cmake. Download 'Windows x64 Installer' from [here](https://cmake.org/download/) and follow the wizard.
+2. Install 'Visual Studio 2022 Build Tools' from [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/) and make sure to install with `Desktop development with C++`.
+4. Download .zip file and exact it from [here](https://github.com/leanhquanea1234/game-2048/archive/refs/heads/main.zip).
+3. Locate the project file, click and run `build_and_run.bat` in `/build_scipts`.
+
+### Mac (NOT TESTED)
+
+I did make a bash script in `/build_scipts` called `build_and_run_mac.sh` (learn how to run bash script from [here](https://stackoverflow.com/questions/733824/how-to-run-a-shell-script-on-a-unix-console-or-mac-terminal)). Not sure if it works though. If it doesn't work, please follow the manual method below.
+
+1. Install 'Xcode Command Line Tools'. Type this in the terminal:
 ```
-cd path/to/your/file/location
-mkdir build
+xcode-select --install
+```
+2. Install 'Homebrew'. For more info, please prefer to [here](https://github.com/Homebrew/install):
+```
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+3. Install Cmake via brew:
+```
+brew install cmake
+```
+4. Download .zip file and exact it from [here](https://github.com/leanhquanea1234/game-2048/archive/refs/heads/main.zip).
+5. Locate the project file. I'm assuming after extraction, it'll be /Downloads/game-2048-main:
+```
+cd ~/Downloads/game-2048-main # please change it to your file location if you put it somewhere else
+```
+6. Make build directory and cd into it:
+```
+mkdir -p build
 cd build
-cmake ..
+```
+7. Configure project:
+```
+cmake .. -DCMAKE_BUILD_TYPE=Release
+```
+8. Build project:
+```
+cmake --build . --config Release
+```
+9. Run the game!
+```
+./bin/Game2048
 ```
 
-3. Build game
-- If you're on Windows, you can use VS/VS Code to build directly.
-- On Linux/macOS, you can use `make`:
-```
-make
-./Game2048
-```
+## Review
+Completion milestone: 80%
+- [x] Basic gameplay
+- [x] Have Undo/Redo 
+- [x] Have linked list, not using <vector> or <stack> lib
+- [x] Seperate files for easy reviewing and maintaining
+- [ ] Binary files

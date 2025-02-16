@@ -120,7 +120,7 @@ void drawSidebar(sf::RenderWindow& window, const sf::Font& font, const Board& ga
     sf::Vector2i statsPosition(WINDOW_HEIGHT - BOARD_MARGIN + LINE_WIDTH, BOARD_MARGIN);
     sf::Text text;
     text.setFont(font);
-    if(gameBoard.score >= INT_MAX) text.setCharacterSize(22);
+    if(gameBoard.score >= 1000000000) text.setCharacterSize(22);
     else if(gameBoard.score > (1 << 26)) text.setCharacterSize(27);
     else text.setCharacterSize(31);
     text.setFillColor(sf::Color(117, 100, 82));
