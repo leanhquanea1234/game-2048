@@ -1,19 +1,25 @@
 # Game 2048
 
-A simple game 2048 implemented using C++ with SFML v2.6. A project purely for the sake of educational purpose.
+A simple game 2048 implemented using C++ with SFML v2.6. A project purely for the sake of educational purpose. [Github page](https://github.com/leanhquanea1234/game-2048)
 
 *by Le Anh Quan - 24120217*
 
+
 ## Demo
 
+- Video with build and run showcase
+[![Watch the video](https://img.youtube.com/vi/2ak-EIfmCLA/hqdefault.jpg)](https://youtu.be/2ak-EIfmCLA)
+
+- A quick look
 [![Watch the video](https://img.youtube.com/vi/ejB1lSIpuds/hqdefault.jpg)](https://youtu.be/ejB1lSIpuds)
 
-## How to build
+
+## How to build 
 
 ### Windows
 
 1. If you don't have Cmake, the first step is installing Cmake. Download 'Windows x64 Installer' from [here](https://cmake.org/download/) and follow the wizard.
-2. Install 'Visual Studio 2022 Build Tools' from [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/) and make sure to install with `Desktop development with C++`.
+2. Install 'Visual Studio 2022 Build Tools' from [here](https://visualstudio.microsoft.com/visual-cpp-build-tools/) and **make sure** to install with `Desktop development with C++` option.
 4. Download .zip file and exact it from [here](https://github.com/leanhquanea1234/game-2048/archive/refs/heads/main.zip).
 3. Locate the project file, click and run `build_and_run.bat` in `/build_scipts`.
 
@@ -56,10 +62,9 @@ cmake --build . --config Release
 ./bin/Game2048
 ```
 
-## Review
-Completion milestone: 80%
-- [x] Basic gameplay
-- [x] Have Undo/Redo 
-- [x] Have linked list, not using <vector> or <stack> lib
-- [x] Seperate files for easy reviewing and maintaining
-- [ ] Binary files
+## Self-review
+Completion: 100%
+- [x] Have Undo/Redo
+- [x] Have a save game feature
+- [x] Saving game using binary file
+- [x] Using only pointers, not using <vector> or <stack> lib
