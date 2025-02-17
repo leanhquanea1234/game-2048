@@ -42,7 +42,7 @@ xcode-select --install
 brew install cmake
 ```
 4. Download .zip file and exact it from [here](https://github.com/leanhquanea1234/game-2048/archive/refs/heads/main.zip).
-5. Locate the project file. I'm assuming after extraction, it'll be /Downloads/game-2048-main:
+5. Locate the project file. I'm assuming after extraction, it'll be `/Downloads/game-2048-main`:
 ```
 cd ~/Downloads/game-2048-main # please change it to your file location if you put it somewhere else
 ```
@@ -69,4 +69,4 @@ Completion: 100%
 - [x] Have Undo/Redo
 - [x] Have a save game feature
 - [x] Saving game using binary file
-- [x] Using only pointers, not using <vector> or <stack> lib
+- [x] Using only pointers, not using `<vector>` or `<stack>` lib
