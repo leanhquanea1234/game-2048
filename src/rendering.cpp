@@ -301,6 +301,9 @@ void runGame(Board &gameBoard, SavedBoard &savedBoard) {
         addRandomTile(gameBoard);
     }
 
+    // gameBoard.value[0][0] = 1 << 31;
+    // gameBoard.value[1][0] = 1 << 31;
+    // gameBoard.value[1][1] = 1 << 17;
 
     short flag = MENU;
     while (window.isOpen()) {

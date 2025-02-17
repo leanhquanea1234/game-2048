@@ -5,11 +5,12 @@ setlocal enabledelayedexpansion
 cd /d "%~dp0.."
 
 if exist "build" (
-    echo Removing previous build directory...
-    rmdir /s /q "build"
+    echo Build directory already exits
+    cd "build"
+) else (
+    mkdir "build"
+    cd "build"
 )
-mkdir "build"
-cd "build"
 
 echo Configuring MSVC build...
 cmake .. -G "Visual Studio 17 2022" -T host=x64 -A x64
