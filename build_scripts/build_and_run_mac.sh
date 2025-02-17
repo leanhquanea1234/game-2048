@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-cd ..
+# move to project root
+cd "$(dirname "${BASH_SOURCE[0]}")"/..
 
 if ! xcode-select -p &>/dev/null; then
     echo "Installing Xcode Command Line Tools..."

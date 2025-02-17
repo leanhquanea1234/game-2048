@@ -1,51 +1,6 @@
 #include "rendering.h"
 
-bool processEvents(sf::RenderWindow& window, Board& gameBoard, SavedBoard &savedBoard) {
-    for(auto event = sf::Event{}; window.pollEvent(event);) {
-        if(event.type == sf::Event::Closed) window.close();
-        else if(event.type == sf::Event::KeyPressed) {
-            char direction = 0;
-            switch (event.key.code) {
-            case sf::Keyboard::Escape:
-                window.close();
-                break;
-            case sf::Keyboard::Left:
-            case sf::Keyboard::A:
-                direction = LEFT;
-                break;
-            case sf::Keyboard::Right:
-            case sf::Keyboard::D:
-                direction = RIGHT;
-                break;
-            case sf::Keyboard::Up:
-            case sf::Keyboard::W:
-                direction = UP;
-                break;
-            case sf::Keyboard::Down:
-            case sf::Keyboard::S:
-                direction = DOWN;
-                break;
-            case sf::Keyboard::U:
-                undoGame(gameBoard, savedBoard);
-                break;
-            case sf::Keyboard::R:
-                redoGame(gameBoard, savedBoard);
-                break;
-            }
-            if(direction) {
-                updateUndoList(gameBoard, savedBoard);
-	            if(!moveTile(gameBoard, direction)) return 0;
-                if(checkValidMovement(gameBoard, savedBoard)) {
-                    gameBoard.step++;
-	                resetRedoList(savedBoard);
-	                addRandomTile(gameBoard);
-                }
-                else savedBoard.undoList.popHead();
-            }
-        }
-    }
-    return 1;
-}
+// -----GETERS-----
 
 sf::Color getTileColor(const unsigned int& tileValue) {
     switch (tileValue) {
@@ -83,10 +38,14 @@ std::string getValueString(const unsigned int& tileValue) {
     else return "2^" + std::to_string(tileValue);
 }
 
+
+
+
+
 // -----DRAWING TO THE WINDOW-----
 
 void drawBoard(sf::RenderWindow& window, const sf::Font& font, const Board& gameBoard) {
-    float tileSize = (WINDOW_HEIGHT - 2 * BOARD_MARGIN) / gameBoard.size; 
+    float tileSize = (WINDOW_HEIGHT - 2 * BOARD_MARGIN) / GAME_SIZE; 
     
     sf::RectangleShape tile(sf::Vector2f(tileSize, tileSize));
     tile.setOutlineThickness(BOARD_BORDER);
@@ -95,8 +54,8 @@ void drawBoard(sf::RenderWindow& window, const sf::Font& font, const Board& game
     sf::Text tileText;
     tileText.setFont(font);
 
-    for(int i = 0; i < gameBoard.size; i++)
-        for(int j = 0; j < gameBoard.size; j++) {
+    for(int i = 0; i < GAME_SIZE; i++)
+        for(int j = 0; j < GAME_SIZE; j++) {
             sf::Vector2f tilePosition(BOARD_MARGIN + j * tileSize, BOARD_MARGIN + i * tileSize);
             tile.setFillColor(getTileColor(gameBoard.value[i][j]));
             tile.setPosition(tilePosition);
@@ -135,8 +94,8 @@ void drawSidebar(sf::RenderWindow& window, const sf::Font& font, const Board& ga
     window.draw(text);
 
     text.setCharacterSize(25);
-    text.setString("Keymap:\n W/A/S/D: Move\n (or arrow keys)\n U: Undo\n R: Redo\n Esc: Quit");
-    text.setPosition(statsPosition.x + 20, WINDOW_HEIGHT - BOARD_BORDER - 250);
+    text.setString("Keymap:\n W/A/S/D: Move\n (or arrow keys)\n U: Undo\n R: Redo\n Y: Restart\n Esc: Quit");
+    text.setPosition(statsPosition.x + 20, WINDOW_HEIGHT - BOARD_BORDER - 280);
     window.draw(text);
 }
 
@@ -206,6 +165,66 @@ void drawEndScreen(sf::RenderWindow& window, const sf::Font& font, const Board& 
     window.draw(text);
 }
 
+
+
+//--------------------------
+
+// only save when user in the middle of the game and exit it
+void closeGame(sf::RenderWindow& window, const Board& gameBoard, const SavedBoard &savedBoard) {
+    saveGame("2048_save.bin", gameBoard, savedBoard);
+    window.close();
+}
+
+short processEvents(sf::RenderWindow& window, Board& gameBoard, SavedBoard &savedBoard) {
+    for(auto event = sf::Event{}; window.pollEvent(event);) {
+        if(event.type == sf::Event::Closed)
+            closeGame(window, gameBoard, savedBoard);
+        else if(event.type == sf::Event::KeyPressed) {
+            char direction = 0;
+            switch (event.key.code) {
+            case sf::Keyboard::Escape:
+                closeGame(window, gameBoard, savedBoard);
+                break;
+            case sf::Keyboard::Y:
+                return RESTART;
+            case sf::Keyboard::Left:
+            case sf::Keyboard::A:
+                direction = LEFT;
+                break;
+            case sf::Keyboard::Right:
+            case sf::Keyboard::D:
+                direction = RIGHT;
+                break;
+            case sf::Keyboard::Up:
+            case sf::Keyboard::W:
+                direction = UP;
+                break;
+            case sf::Keyboard::Down:
+            case sf::Keyboard::S:
+                direction = DOWN;
+                break;
+            case sf::Keyboard::U:
+                undoGame(gameBoard, savedBoard);
+                break;
+            case sf::Keyboard::R:
+                redoGame(gameBoard, savedBoard);
+                break;
+            }
+            if(direction) {
+                updateUndoList(gameBoard, savedBoard);
+	            if(!moveTile(gameBoard, direction)) return OVERFLOWED;
+                if(checkValidMovement(gameBoard, savedBoard)) {
+                    gameBoard.step++;
+	                resetRedoList(savedBoard);
+	                addRandomTile(gameBoard);
+                }
+                else savedBoard.undoList.popHead();
+            }
+        }
+    }
+    return CONTINUE;
+}
+
 // -----APPLYING-----
 
 void runMenu(sf::RenderWindow& window, const sf::Font& font, short& flag) {
@@ -243,20 +262,22 @@ void runEndScreen(sf::RenderWindow& window, const sf::Font& font, Board &gameBoa
 }
 
 void runSession(sf::RenderWindow& window, const sf::Font& font, Board &gameBoard, SavedBoard &savedBoard, short& flag) {
-    if(!processEvents(window, gameBoard, savedBoard)) {
+    short state = processEvents(window, gameBoard, savedBoard);
+
+    if(state == OVERFLOWED) {
         flag = OVERFLOWED;
         return;
     }
-    if (!checkPossibleMove(gameBoard)) {
+    else if(state == RESTART || !checkPossibleMove(gameBoard)) {
         flag = END_SESSION;
         return;
-    }
+    } 
+
     window.clear(sf::Color(250, 248, 240));
     drawBoard(window, font, gameBoard);
     drawSidebar(window, font, gameBoard);
     window.display();
 }
-
 
 
 void runGame(Board &gameBoard, SavedBoard &savedBoard) {
@@ -268,8 +289,18 @@ void runGame(Board &gameBoard, SavedBoard &savedBoard) {
     if (!font.loadFromFile("../assets/RussoOne-Regular.ttf"))
         printf("Failed to load font.\n");
 
-    initializeGameBoard(gameBoard, GAME_SIZE);
-    addRandomTile(gameBoard);
+
+    std::ifstream file("2048_save.bin", std::ios::binary);
+    // check if is there a save or not
+    if(file.is_open()) {
+        file.close();
+        loadGame("2048_save.bin", gameBoard, savedBoard);
+    }
+    else {
+        initializeGameBoard(gameBoard);
+        addRandomTile(gameBoard);
+    }
+
 
     short flag = MENU;
     while (window.isOpen()) {
@@ -278,7 +309,6 @@ void runGame(Board &gameBoard, SavedBoard &savedBoard) {
             runSession(window, font, gameBoard, savedBoard, flag);
         else runEndScreen(window, font, gameBoard, flag);
     }
-
     deleteGameBoard(gameBoard);
 	resetSavedBoard(savedBoard);
 }

@@ -16,6 +16,7 @@ set(SOURCES
     src/main.cpp
     src/game_logic.cpp
     src/terminal_rendering.cpp
+    src/saving.cpp
     src/rendering.cpp
 )
 

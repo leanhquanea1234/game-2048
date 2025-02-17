@@ -13,17 +13,16 @@ Winning solution: make score which is unsinged long long overflowed ww.
 // array to store power of 2, calculated once in each session
 unsigned long long *toBase2 = nullptr;
 
-bool initializeGameBoard(Board &gameBoard, const int &size) {
-	gameBoard.size = size;
-	gameBoard.value = new unsigned int*[size];
+bool initializeGameBoard(Board &gameBoard) {
+	gameBoard.value = new unsigned int*[GAME_SIZE];
 	if (gameBoard.value == nullptr) return 0;
-	for (int i = 0; i < size; i++) {
-		gameBoard.value[i] = new unsigned int[size];
+	for (int i = 0; i < GAME_SIZE; i++) {
+		gameBoard.value[i] = new unsigned int[GAME_SIZE];
 		if (gameBoard.value[i] == nullptr) return 0;
 	}
 
-	for (int i = 0; i < gameBoard.size; i++)
-		for (int j = 0; j < gameBoard.size; j++)
+	for (int i = 0; i < GAME_SIZE; i++)
+		for (int j = 0; j < GAME_SIZE; j++)
 			gameBoard.value[i][j] = 0;
 
 	return 1;
@@ -45,8 +44,8 @@ void addRandomTile(Board &gameBoard) {
 	List<std::pair<int, int>> emptyTile;
 	int countEmptyTile = 0;
 
-	for (int i = 0; i < gameBoard.size; i++)
-		for (int j = 0; j < gameBoard.size; j++)
+	for (int i = 0; i < GAME_SIZE; i++)
+		for (int j = 0; j < GAME_SIZE; j++)
 			if (!gameBoard.value[i][j]) {
 				emptyTile.addTail({ i, j });
 				countEmptyTile++;
@@ -70,7 +69,7 @@ void addRandomTile(Board &gameBoard) {
 
 // merge and update score
 bool mergeTile(Board& gameBoard, unsigned int *line) {
-	for(int i = 0; i < gameBoard.size - 1; i++)
+	for(int i = 0; i < GAME_SIZE - 1; i++)
 		if (line[i] && line[i] == line[i + 1]) {
 			line[i]++;
 			line[i + 1] = 0;
@@ -96,28 +95,28 @@ void shiftTile(unsigned int *line, const int &size) {
 }
 
 bool moveTile(Board &gameBoard, short direction) {
-	unsigned int *line = new unsigned int[gameBoard.size];
+	unsigned int *line = new unsigned int[GAME_SIZE];
 
-	for (int i = 0; i < gameBoard.size; i++) {
-		for(int j = 0; j < gameBoard.size; j++)
+	for (int i = 0; i < GAME_SIZE; i++) {
+		for(int j = 0; j < GAME_SIZE; j++)
 			switch (direction) { // extract board to line
 				case UP: line[j] = gameBoard.value[j][i]; break;
-				case DOWN: line[j] = gameBoard.value[gameBoard.size - 1 - j][i]; break;
+				case DOWN: line[j] = gameBoard.value[GAME_SIZE - 1 - j][i]; break;
 				case LEFT: line[j] = gameBoard.value[i][j]; break;
-				case RIGHT: line[j] = gameBoard.value[i][gameBoard.size - 1 - j]; break;
+				case RIGHT: line[j] = gameBoard.value[i][GAME_SIZE - 1 - j]; break;
 			}
 
-		shiftTile(line, gameBoard.size);
+		shiftTile(line, GAME_SIZE);
 		// merge and update score
 		if(!mergeTile(gameBoard, line)) return 0;
-		shiftTile(line, gameBoard.size); // shift again bc of prev merge
+		shiftTile(line, GAME_SIZE); // shift again bc of prev merge
 
-		for (int j = 0; j < gameBoard.size; j++)
+		for (int j = 0; j < GAME_SIZE; j++)
 			switch (direction) { // extract line to board
 			case UP:  gameBoard.value[j][i] = line[j]; break;
-			case DOWN: gameBoard.value[gameBoard.size - 1 - j][i] = line[j]; break;
+			case DOWN: gameBoard.value[GAME_SIZE - 1 - j][i] = line[j]; break;
 			case LEFT: gameBoard.value[i][j] = line[j]; break;
-			case RIGHT: gameBoard.value[i][gameBoard.size - 1 - j] = line[j]; break;
+			case RIGHT: gameBoard.value[i][GAME_SIZE - 1 - j] = line[j]; break;
 			}
 	}
 	delete[] line;
@@ -126,20 +125,20 @@ bool moveTile(Board &gameBoard, short direction) {
 
 bool checkValidMovement(const Board& gameBoard, SavedBoard &savedBoard) {
 	Board *previousBoard = savedBoard.undoList.pHead->value;
-	for(int i = 0; i < gameBoard.size; i++)
-		for (int j = 0; j < gameBoard.size; j++)
+	for(int i = 0; i < GAME_SIZE; i++)
+		for (int j = 0; j < GAME_SIZE; j++)
 			if(gameBoard.value[i][j] != previousBoard->value[i][j])
 				return 1;
 	return 0;
 }
 
 bool checkPossibleMove(const Board &gameBoard) {
-	for(int i = 0; i < gameBoard.size; i++)
-		for (int j = 0; j < gameBoard.size; j++) {
+	for(int i = 0; i < GAME_SIZE; i++)
+		for (int j = 0; j < GAME_SIZE; j++) {
 			if (!gameBoard.value[i][j]) return true;
-			else if (i < gameBoard.size - 1 && gameBoard.value[i][j] == gameBoard.value[i + 1][j])
+			else if (i < GAME_SIZE - 1 && gameBoard.value[i][j] == gameBoard.value[i + 1][j])
 				return true;
-			else if(j < gameBoard.size - 1 && gameBoard.value[i][j] == gameBoard.value[i][j + 1])
+			else if(j < GAME_SIZE - 1 && gameBoard.value[i][j] == gameBoard.value[i][j + 1])
 				return true;
 		}
 	return false;
@@ -148,8 +147,8 @@ bool checkPossibleMove(const Board &gameBoard) {
 void clearGameBoard(Board& gameBoard) {
 	gameBoard.score = 0;
 	gameBoard.step = 0;
-	for(int i = 0; i < gameBoard.size; i++)
-		for(int j = 0; j < gameBoard.size; j++)
+	for(int i = 0; i < GAME_SIZE; i++)
+		for(int j = 0; j < GAME_SIZE; j++)
 			gameBoard.value[i][j] = 0;
 }
 
@@ -157,12 +156,11 @@ void deleteGameBoard(Board &gameBoard) {
 	delete[] toBase2;
 	toBase2 = nullptr;
 
-	for (int i = 0; i < gameBoard.size; i++)
+	for (int i = 0; i < GAME_SIZE; i++)
 		delete[] gameBoard.value[i];
 	delete[] gameBoard.value;
 	
 	gameBoard.value = nullptr;
-	gameBoard.size = 0;
 	gameBoard.score = 0;
 	gameBoard.step = 0;
 }
@@ -179,14 +177,13 @@ UPDATE: all linked list now
 */
 Board* copyState(const Board &gameBoard) {
 	Board *newGameBoard = new Board;
-	if (!initializeGameBoard(*newGameBoard, gameBoard.size))
+	if (!initializeGameBoard(*newGameBoard))
 		return nullptr;
 
 	newGameBoard->score = gameBoard.score;
-	newGameBoard->size = gameBoard.size;
 	newGameBoard->step = gameBoard.step;
-	for (int i = 0; i < gameBoard.size; i++)
-		for (int j = 0; j < gameBoard.size; j++)
+	for (int i = 0; i < GAME_SIZE; i++)
+		for (int j = 0; j < GAME_SIZE; j++)
 			newGameBoard->value[i][j] = gameBoard.value[i][j];
 
 	return newGameBoard;
@@ -243,6 +240,7 @@ void resetUndoList(SavedBoard &savedBoard) {
 		delete temp;
 	}
 }
+
 void resetSavedBoard(SavedBoard &savedBoard) {
 	resetRedoList(savedBoard);
 	resetUndoList(savedBoard);

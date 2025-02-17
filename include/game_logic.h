@@ -5,7 +5,7 @@
 
 
 
-bool initializeGameBoard(Board &gameBoard, const int &size);
+bool initializeGameBoard(Board &gameBoard);
 void addRandomTile(Board &gameBoard);
 bool moveTile(Board &gameBoard, short direction);
 bool checkValidMovement(const Board& gameBoard, SavedBoard &savedBoard);

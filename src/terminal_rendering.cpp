@@ -21,8 +21,8 @@ void printGameBoard(const Board &gameBoard) {
 	system("CLS");
 	std::cout << "SCORE: " << gameBoard.score << '\n';
 	std::cout << "STEPS: " << gameBoard.step << '\n';
-	for (int i = 0; i < gameBoard.size; i++) {
-		for (int j = 0; j < gameBoard.size; j++)
+	for (int i = 0; i < GAME_SIZE; i++) {
+		for (int j = 0; j < GAME_SIZE; j++)
 			std::cout << gameBoard.value[i][j] << ' ';
 		std::cout << '\n';
 	}
@@ -54,7 +54,7 @@ bool runCycle(Board &gameBoard, SavedBoard &savedBoard) {
 }
 
 void RunGameTerminal(Board &gameBoard, SavedBoard &savedBoard) {
-	initializeGameBoard(gameBoard, GAME_SIZE);
+	initializeGameBoard(gameBoard);
     addRandomTile(gameBoard);
 
 	while (runCycle(gameBoard, savedBoard));

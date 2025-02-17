@@ -116,7 +116,7 @@ struct List {
 
     void clear() {
         Node<T> *temp = pHead;
-
+        size = 0;
         while (temp != nullptr) {
 		    pHead = temp->pNext;
 		    delete temp;
